@@ -1,3 +1,5 @@
 // src/config.js
-export const backendUrl = "http://localhost:4000";
+throw new Error("🔥 THIS IS THE FRONTEND BUILD I AM EDITING 🔥");
+
+export const backendUrl = "https://valer-backend.vercel.app";
 export const currency = "$";
