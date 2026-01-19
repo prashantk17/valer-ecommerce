@@ -1,0 +1,64 @@
+@import url("https://fonts.googleapis.com/css2?family=Prata&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: Outfit;
+}
+.prata-regular {
+  font-family: "Prata", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Hide scrollbar safely */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@media (max-width: 640px) {
+  a.active {
+    background-color: black;
+    color: white;
+  }
+}
+
+/* ===== COMPACT LUXURY TOAST ===== */
+
+.couture-toast {
+  background: #f9f9f7 !important;
+  color: #111 !important;
+
+  border-radius: 8px !important; /* smaller radius */
+  padding: 8px 12px !important; /* 🔥 key: less padding */
+
+  font-weight: 500;
+  letter-spacing: 0.2px;
+
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+.couture-toast-body {
+  font-family: Outfit, system-ui, sans-serif;
+  font-size: 0.82rem; /* 🔥 smaller text */
+  line-height: 1.25; /* tighter */
+  margin: 0;
+}
+
+/* Subtle accent */
+.Toastify__toast--success {
+  border-left: 2px solid #111;
+}
+
+.Toastify__toast--error {
+  border-left: 2px solid #7a1f1f;
+}

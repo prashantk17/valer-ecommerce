@@ -1,0 +1,52 @@
+<svg
+  width="420"
+  height="120"
+  viewBox="0 0 420 120"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <!-- Gradient for the V mark -->
+    <linearGradient id="vGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3ABEFF" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+
+    <!-- Gradient for text -->
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#C7B8FF" />
+    </linearGradient>
+
+    <!-- Soft glow -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- V / Checkmark Symbol -->
+  <path
+    d="M40 30 L70 80 L115 25"
+    fill="none"
+    stroke="url(#vGradient)"
+    stroke-width="14"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#glow)"
+  />
+
+  <!-- Valer Text -->
+  <text
+    x="135"
+    y="78"
+    font-size="56"
+    font-family="Poppins, Inter, Arial, sans-serif"
+    font-weight="600"
+    fill="url(#textGradient)"
+  >
+    Valer
+  </text>
+</svg>
