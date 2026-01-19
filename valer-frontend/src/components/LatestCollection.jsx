@@ -46,7 +46,7 @@ const LatestCollection = () => {
           <ProductItem
             key={index}
             id={item._id}
-            image={item.image}
+            image={item.images?.[0] || "/placeholder.png"}
             name={item.name}
             price={item.price}
           />

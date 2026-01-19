@@ -2,10 +2,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import { Link, useNavigate } from "react-router-dom";
+import { backendUrl, currency } from "../config";
 
 const Cart = () => {
-  const { products, currency, cartItems, addToCart, navigate } =
-    useContext(ShopContext);
+  const { products, cartItems, addToCart } = useContext(ShopContext);
+
+  const navigate = useNavigate();
 
   const [cartData, setCartData] = useState([]);
 
@@ -95,7 +97,7 @@ const Cart = () => {
               {/* Product */}
               <div className="flex gap-5">
                 <img
-                  src={product.image[0]}
+                  src={product.images?.[0]}
                   className="w-16 sm:w-20"
                   alt={product.name}
                 />

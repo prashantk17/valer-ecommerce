@@ -1,25 +1,106 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaFacebookF } from "react-icons/fa";
+import axios from "axios";
+import { ShopContext } from "../context/ShopContext";
+import { backendUrl } from "../config";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [mode, setMode] = useState("login");
   const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState(null); // 👈 response message
+  const [messageType, setMessageType] = useState(""); // "error" | "success"
 
-  const handleSubmit = (e) => {
+  const { setToken} = useContext(ShopContext);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage(null);
 
-    if (mode === "signup") {
-      // Simulate successful account creation
-      setSuccess(true);
+    try {
+      if (mode === "signup") {
+        const res = await axios.post(backendUrl + "/api/user/register", {
+          name,
+          email,
+          password,
+        });
 
-      setTimeout(() => {
-        window.location.href = "/collection"; // or "/"
-      }, 2000);
-    } else {
-      // Login flow placeholder
-      console.log("Login submitted");
+        if (res.data.success) {
+          showSuccessToast("Account created successfully");
+          setSuccess(true);
+
+          setTimeout(() => {
+            navigate("/collection");
+          }, 2000);
+        } else {
+          showErrorToast(res.data.message || "Signup failed");
+        }
+      } else {
+        const res = await axios.post(backendUrl + "/api/user/login", {
+          email,
+          password,
+        });
+
+        if (res.data.success) {
+          showSuccessToast("Welcome back");
+          setToken(res.data.token);
+          localStorage.setItem("token", res.data.token);
+          navigate("/collection");
+        } else {
+          showErrorToast(res.data.message || "Invalid credentials");
+        }
+      }
+    } catch (error) {
+      showErrorToast(
+        error.response?.data?.message ||
+          "Something went wrong. Please try again.",
+      );
     }
+  };
+
+  const showSuccessToast = (msg) => {
+    toast.success(msg, {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      style: {
+        background: "#000",
+        color: "#fff",
+        letterSpacing: "0.12em",
+        fontSize: "11px",
+        textTransform: "uppercase",
+      },
+    });
+  };
+
+  const showErrorToast = (msg) => {
+    toast.error(msg, {
+      position: "top-center",
+      autoClose: 2500,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      style: {
+        background: "#111",
+        color: "#fff",
+        letterSpacing: "0.08em",
+        fontSize: "11px",
+        textTransform: "uppercase",
+      },
+    });
   };
 
   return (
@@ -54,7 +135,10 @@ const Login = () => {
           <div className="flex border border-gray-300 rounded-full mb-10 overflow-hidden">
             <button
               type="button"
-              onClick={() => setMode("login")}
+              onClick={() => {
+                setMode("login");
+                setMessage(null);
+              }}
               className={`w-1/2 py-2 text-sm transition ${
                 mode === "login"
                   ? "bg-black text-white"
@@ -63,9 +147,13 @@ const Login = () => {
             >
               Sign In
             </button>
+
             <button
               type="button"
-              onClick={() => setMode("signup")}
+              onClick={() => {
+                setMode("signup");
+                setMessage(null);
+              }}
               className={`w-1/2 py-2 text-sm transition ${
                 mode === "signup"
                   ? "bg-black text-white"
@@ -88,6 +176,19 @@ const Login = () => {
             </p>
           </div>
 
+          {/* RESPONSE MESSAGE */}
+          {message && (
+            <div
+              className={`mb-4 rounded-md px-4 py-3 text-sm ${
+                messageType === "error"
+                  ? "bg-red-50 text-red-600 border border-red-200"
+                  : "bg-green-50 text-green-600 border border-green-200"
+              }`}
+            >
+              {message}
+            </div>
+          )}
+
           {/* FORM */}
           <form className="space-y-4" onSubmit={handleSubmit}>
             {mode === "signup" && (
@@ -95,6 +196,8 @@ const Login = () => {
                 type="text"
                 placeholder="Full Name"
                 required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full rounded-md border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-black transition"
               />
             )}
@@ -103,6 +206,8 @@ const Login = () => {
               type="email"
               placeholder="Email"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-md border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-black transition"
             />
 
@@ -110,17 +215,10 @@ const Login = () => {
               type="password"
               placeholder="Password"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-md border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-black transition"
             />
-
-            {mode === "signup" && (
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                required
-                className="w-full rounded-md border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-black transition"
-              />
-            )}
 
             <button
               type="submit"
@@ -133,7 +231,7 @@ const Login = () => {
               <div className="text-right">
                 <button
                   type="button"
-                  onClick={() => (window.location.href = "/forgot-password")}
+                  onClick={() => navigate("/forgot-password")}
                   className="text-xs text-gray-500 hover:text-black transition"
                 >
                   Forgot password?

@@ -1,7 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import CheckoutSteps from "../components/CheckoutSteps";
 import { useNavigate } from "react-router-dom";
+import { currency } from "../config";
 
 /* Simple country list (extend later if needed) */
 const COUNTRIES = [
@@ -10,10 +11,14 @@ const COUNTRIES = [
   { name: "United Kingdom", code: "+44" },
 ];
 
+const PLATFORM_FEE = 20;
+const GST_RATE = 0.18;
+
 const Checkout = () => {
-  const { products, cartItems, currency } = useContext(ShopContext);
+  const { products, cartItems } = useContext(ShopContext);
   const navigate = useNavigate();
 
+  /* ---------------- ADDRESS STATE ---------------- */
   const [address, setAddress] = useState({
     name: "",
     email: "",
@@ -25,20 +30,8 @@ const Checkout = () => {
     pincode: "",
   });
 
-  /* Build cart data */
-  const cartData = [];
-  for (const id in cartItems) {
-    for (const size in cartItems[id]) {
-      cartData.push({
-        id,
-        size,
-        quantity: cartItems[id][size],
-      });
-    }
-  }
-
   /* Guard: prevent blank checkout */
-  if (cartData.length === 0) {
+  if (!cartItems || Object.keys(cartItems).length === 0) {
     return (
       <div className="h-[60vh] flex items-center justify-center text-gray-500">
         Your cart is empty
@@ -46,24 +39,61 @@ const Checkout = () => {
     );
   }
 
-  /* Pricing */
-  const subtotal = cartData.reduce((acc, item) => {
-    const product = products.find((p) => p._id === item.id);
-    return acc + product.price * item.quantity;
-  }, 0);
+  /* ---------------- PRICING ---------------- */
+  const subtotal = useMemo(() => {
+    let sum = 0;
 
-  const gst = Math.round(subtotal * 0.18);
-  const PLATFORM_FEE = 20;
+    for (const productId in cartItems) {
+      const product = products.find((p) => p._id === productId);
+      if (!product) continue;
+
+      for (const size in cartItems[productId]) {
+        sum += product.price * cartItems[productId][size];
+      }
+    }
+
+    return sum;
+  }, [cartItems, products]);
+
+  const gst = Math.round(subtotal * GST_RATE);
   const total = subtotal + gst + PLATFORM_FEE;
+
+  /* ---------------- HANDLERS ---------------- */
+  const updateAddress = (key, value) => {
+    setAddress((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleCountryChange = (countryName) => {
+    const selected = COUNTRIES.find((c) => c.name === countryName);
+    if (!selected) return;
+
+    setAddress((prev) => ({
+      ...prev,
+      country: selected.name,
+      countryCode: selected.code,
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/payment");
+
+    navigate("/payment", {
+      state: {
+        address,
+        cartItems, // ✅ RAW CART OBJECT (IMPORTANT)
+        pricing: {
+          subtotal,
+          gst,
+          platformFee: PLATFORM_FEE,
+          total,
+        },
+      },
+    });
   };
 
+  /* ---------------- UI ---------------- */
   return (
     <div className="max-w-6xl mx-auto px-6 pt-14">
-      {/* Steps */}
       <CheckoutSteps step={1} />
 
       <div className="grid md:grid-cols-2 gap-16">
@@ -76,9 +106,7 @@ const Checkout = () => {
             placeholder="Full Name"
             className="w-full border px-4 py-3 text-sm rounded-md"
             value={address.name}
-            onChange={(e) =>
-              setAddress({ ...address, name: e.target.value })
-            }
+            onChange={(e) => updateAddress("name", e.target.value)}
           />
 
           <input
@@ -87,9 +115,7 @@ const Checkout = () => {
             placeholder="Email"
             className="w-full border px-4 py-3 text-sm rounded-md"
             value={address.email}
-            onChange={(e) =>
-              setAddress({ ...address, email: e.target.value })
-            }
+            onChange={(e) => updateAddress("email", e.target.value)}
           />
 
           {/* Country + Phone */}
@@ -97,16 +123,7 @@ const Checkout = () => {
             <select
               className="col-span-1 border px-4 py-3 text-sm rounded-md bg-white"
               value={address.country}
-              onChange={(e) => {
-                const selected = COUNTRIES.find(
-                  (c) => c.name === e.target.value
-                );
-                setAddress({
-                  ...address,
-                  country: selected.name,
-                  countryCode: selected.code,
-                });
-              }}
+              onChange={(e) => handleCountryChange(e.target.value)}
             >
               {COUNTRIES.map((c) => (
                 <option key={c.name} value={c.name}>
@@ -125,9 +142,7 @@ const Checkout = () => {
                 placeholder="Phone number"
                 className="flex-1 px-4 py-3 text-sm outline-none"
                 value={address.phone}
-                onChange={(e) =>
-                  setAddress({ ...address, phone: e.target.value })
-                }
+                onChange={(e) => updateAddress("phone", e.target.value)}
               />
             </div>
           </div>
@@ -137,9 +152,7 @@ const Checkout = () => {
             placeholder="Address"
             className="w-full border px-4 py-3 text-sm rounded-md"
             value={address.address}
-            onChange={(e) =>
-              setAddress({ ...address, address: e.target.value })
-            }
+            onChange={(e) => updateAddress("address", e.target.value)}
           />
 
           <div className="grid grid-cols-2 gap-4">
@@ -148,9 +161,7 @@ const Checkout = () => {
               placeholder="City"
               className="border px-4 py-3 text-sm rounded-md"
               value={address.city}
-              onChange={(e) =>
-                setAddress({ ...address, city: e.target.value })
-              }
+              onChange={(e) => updateAddress("city", e.target.value)}
             />
 
             <input
@@ -158,9 +169,7 @@ const Checkout = () => {
               placeholder="Pincode"
               className="border px-4 py-3 text-sm rounded-md"
               value={address.pincode}
-              onChange={(e) =>
-                setAddress({ ...address, pincode: e.target.value })
-              }
+              onChange={(e) => updateAddress("pincode", e.target.value)}
             />
           </div>
 

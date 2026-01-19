@@ -11,7 +11,7 @@ const ProductItem = ({ id, image, name, price }) => {
       <div className="overflow-hidden">
         <img
           className="rounded-xl hover:scale-110 transition ease-in-out"
-          src={image[0]}
+          src={image}
           alt=""
         />
       </div>

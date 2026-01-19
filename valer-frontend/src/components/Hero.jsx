@@ -2,11 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import heroImg1 from "../assets/hero1.jpg";
 import heroImg2 from "../assets/hero2.jpg";
 import heroBg from "../assets/heroBg.jpg";
+import { ShopContext } from "../context/ShopContext";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const heroRef = useRef(null);
   const [inView, setInView] = useState(false);
   const [bgImage, setBgImage] = useState(null);
+
+  const navigate = useNavigate();
 
   // Detect when hero enters viewport
   useEffect(() => {
@@ -15,7 +20,7 @@ const Hero = () => {
         setInView(entry.isIntersecting);
         if (!entry.isIntersecting) setBgImage(null);
       },
-      { threshold: 0.4 }
+      { threshold: 0.4 },
     );
 
     if (heroRef.current) observer.observe(heroRef.current);
@@ -55,6 +60,7 @@ const Hero = () => {
           </p>
 
           <button
+            onClick={() => navigate("/collection")}
             className="
               mt-4 px-10 py-3 rounded-full
               border border-black text-black text-sm tracking-wide

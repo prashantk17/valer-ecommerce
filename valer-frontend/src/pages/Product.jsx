@@ -3,10 +3,12 @@ import { Link, useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
+import { currency } from "../config";
+import { toast } from "react-toastify";
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart } = useContext(ShopContext);
+  const { products, addToCart } = useContext(ShopContext);
 
   const [productData, setProductData] = useState(null);
   const [image, setImage] = useState("");
@@ -23,7 +25,7 @@ const Product = () => {
     const product = products.find((item) => item._id === productId);
     if (product) {
       setProductData(product);
-      setImage(product.image[0]);
+      setImage(product.images[0]);
       setSelectedSize(""); // RESET size
     }
   }, [productId, products]);
@@ -34,6 +36,23 @@ const Product = () => {
   };
 
   if (!productData) return null;
+  const showAddToCartToast = () => {
+    toast.success("Added to cart", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      style: {
+        background: "#000",
+        color: "#fff",
+        letterSpacing: "0.12em",
+        fontSize: "11px",
+        textTransform: "uppercase",
+      },
+    });
+  };
 
   return (
     <section className="border-t pt-12">
@@ -43,7 +62,7 @@ const Product = () => {
           {/* Images */}
           <div className="flex-1 flex flex-col-reverse lg:flex-row gap-4">
             <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible">
-              {productData.image.map((item, index) => (
+              {productData.images.map((item, index) => (
                 <img
                   key={index}
                   src={item}
@@ -113,12 +132,32 @@ const Product = () => {
 
             {/* Add to Cart */}
             <button
-              onClick={() => addToCart(productData._id, selectedSize)}
-              className="mt-10 px-12 py-3 bg-black text-white text-sm tracking-wide
-                hover:bg-gray-900 transition rounded-md"
+              disabled={!selectedSize}
+              onClick={() => {
+                console.log(
+                  "CLICKED ADD TO CART",
+                  productData._id,
+                  selectedSize,
+                );
+                addToCart(productData._id, selectedSize);
+                showAddToCartToast();
+              }}
+              className={`
+    mt-10
+    px-14 py-3
+    border
+    text-xs tracking-[0.3em] uppercase
+    transition-all duration-300
+    ${
+      selectedSize
+        ? "border-black text-black hover:bg-black hover:text-white"
+        : "border-gray-300 text-gray-400 cursor-not-allowed"
+    }
+  `}
             >
               ADD TO CART
             </button>
+
             {/* Meta */}
             <div className="mt-8 text-xs text-gray-400 leading-relaxed">
               <p>100% Original product.</p>

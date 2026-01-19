@@ -4,9 +4,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        prata: ["Prata", "serif"],
+        heading: ["Playfair Display", "serif"],
+        body: ["Inter", "sans-serif"],
       },
     },
   },
+
   plugins: [],
 };

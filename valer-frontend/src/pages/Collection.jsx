@@ -27,7 +27,7 @@ const Collection = () => {
     setCategory((prev) =>
       prev.includes(value)
         ? prev.filter((item) => item !== value)
-        : [...prev, value]
+        : [...prev, value],
     );
   };
 
@@ -35,7 +35,7 @@ const Collection = () => {
     setSubCategory((prev) =>
       prev.includes(value)
         ? prev.filter((item) => item !== value)
-        : [...prev, value]
+        : [...prev, value],
     );
   };
 
@@ -43,7 +43,7 @@ const Collection = () => {
     setPrice((prev) =>
       prev.includes(value)
         ? prev.filter((item) => item !== value)
-        : [...prev, value]
+        : [...prev, value],
     );
   };
 
@@ -64,7 +64,7 @@ const Collection = () => {
 
     if (search && search.trim() !== "") {
       temp = temp.filter((p) =>
-        p.name.toLowerCase().includes(search.toLowerCase())
+        p.name.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
@@ -75,8 +75,8 @@ const Collection = () => {
           (range) =>
             price.includes(range.label) &&
             p.price >= range.min &&
-            p.price <= range.max
-        )
+            p.price <= range.max,
+        ),
       );
     }
 
@@ -90,6 +90,9 @@ const Collection = () => {
 
     setFilterProducts(temp);
   }, [products, category, subCategory, price, search, sortType]);
+
+  console.log("PRODUCTS:", products.length);
+  console.log("FILTERED:", filterProducts.length);
 
   return (
     <section className="w-full">
@@ -211,7 +214,7 @@ const Collection = () => {
                   id={item._id}
                   name={item.name}
                   price={item.price}
-                  image={item.image}
+                  image={item.images?.[0]}
                 />
               ))}
             </div>

@@ -13,7 +13,7 @@ const navItems = [
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
 
-  const { setShowSearch, getCartCount } = useContext(ShopContext);
+  const {setShowSearch, getCartCount } = useContext(ShopContext);
   const navigate = useNavigate();
 
   return (
