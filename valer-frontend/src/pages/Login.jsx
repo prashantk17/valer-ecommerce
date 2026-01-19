@@ -30,7 +30,7 @@ const Login = () => {
 
     try {
       if (mode === "signup") {
-        const res = await axios.post(backendUrl + "/api/user/register", {
+        const res = await axios.post(backendUrl + "/user/register", {
           name,
           email,
           password,
@@ -48,7 +48,7 @@ const Login = () => {
           showErrorToast(res.data.message || "Signup failed");
         }
       } else {
-        const res = await axios.post(backendUrl + "/api/user/login", {
+        const res = await axios.post(backendUrl + "/user/login", {
           email,
           password,
         });
