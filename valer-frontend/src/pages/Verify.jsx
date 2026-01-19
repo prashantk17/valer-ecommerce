@@ -20,7 +20,7 @@ const Verify = () => {
     const verifyPayment = async () => {
       try {
         const res = await axios.post(
-          `${backendUrl}/api/order/verify`,
+          `${backendUrl}/order/verify`,
           { session_id: sessionId },
           {
             headers: {

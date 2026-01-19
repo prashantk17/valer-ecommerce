@@ -61,7 +61,7 @@ const Payment = () => {
       };
 
       if (paymentMethod === "COD") {
-        const res = await axios.post(`${backendUrl}/api/order/place`, payload, {
+        const res = await axios.post(`${backendUrl}/order/place`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -75,7 +75,7 @@ const Payment = () => {
 
       if (paymentMethod === "Stripe") {
         const res = await axios.post(
-          `${backendUrl}/api/order/stripe`,
+          `${backendUrl}/order/stripe`,
           payload,
           {
             headers: {

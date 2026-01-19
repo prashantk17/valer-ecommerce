@@ -37,7 +37,7 @@ const Orders = () => {
   const fetchOrders = async () => {
     try {
       const res = await axios.post(
-        `${backendUrl}/api/order/userorders`,
+        `${backendUrl}/order/userorders`,
         {},
         {
           headers: {
@@ -69,7 +69,7 @@ const Orders = () => {
   const cancelOrderHandler = async () => {
     try {
       const res = await axios.post(
-        `${backendUrl}/api/order/cancel`,
+        `${backendUrl}/order/cancel`,
         { orderId: confirmingOrderId },
         {
           headers: {
