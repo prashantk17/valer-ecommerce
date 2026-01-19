@@ -30,7 +30,7 @@ const ShopContextProvider = ({ children }) => {
     console.log("🧪 USER TOKEN:", token);
     try {
       const res = await api.post(
-        backendUrl + "/api/cart/get",
+        "/cart/get",
         {},
         {
           headers: {
@@ -76,7 +76,7 @@ const ShopContextProvider = ({ children }) => {
     if (token) {
       try {
         await api.post(
-          backendUrl + "/api/cart/add",
+          "/cart/add",
           { productId, size, quantity: change },
           {
             headers: {
@@ -111,7 +111,7 @@ const ShopContextProvider = ({ children }) => {
   /* ---------------- PRODUCTS ---------------- */
   const fetchProducts = async () => {
     try {
-      const res = await api.get(`${backendUrl}/api/product/list`);
+      const res = await api.get(`${backendUrl}/product/list`);
       if (res.data.success) {
         setProducts(res.data.products);
       }
