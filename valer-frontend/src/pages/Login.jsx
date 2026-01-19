@@ -6,7 +6,7 @@ import { ShopContext } from "../context/ShopContext";
 import { backendUrl } from "../config";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 const Login = () => {
   const [mode, setMode] = useState("login");
@@ -14,13 +14,15 @@ const Login = () => {
   const [message, setMessage] = useState(null); // 👈 response message
   const [messageType, setMessageType] = useState(""); // "error" | "success"
 
-  const { setToken} = useContext(ShopContext);
+  const { setToken } = useContext(ShopContext);
+  const navigate = useNavigate();
+  if (localStorage.getItem("token")) {
+    return <Navigate to="/" replace />;
+  }
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +41,8 @@ const Login = () => {
           setSuccess(true);
 
           setTimeout(() => {
-            navigate("/collection");
+            setMode("login"); // 👈 important
+            setSuccess(false);
           }, 2000);
         } else {
           showErrorToast(res.data.message || "Signup failed");

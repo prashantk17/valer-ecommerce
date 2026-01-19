@@ -1,7 +1,9 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 import Home from "./pages/Home";
 import Collection from "./pages/Collection";
 import Product from "./pages/Product";
@@ -11,21 +13,27 @@ import Payment from "./pages/Payment";
 import Orders from "./pages/Orders";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import Login from "./pages/Login";
 import Careers from "./pages/Careers";
+import Login from "./pages/Login";
 import OrderSuccess from "./pages/OrderSuccess";
 import Verify from "./pages/Verify";
+
 const App = () => {
   return (
     <Routes>
-      {/* AUTH PAGES (NO NAVBAR) */}
+      {/* ================= AUTH ROUTES ================= */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<Login />} />
-        {/* later: /signup, /forgot-password */}
       </Route>
 
-      {/* MAIN SITE (WITH NAVBAR) */}
-      <Route element={<MainLayout />}>
+      {/* ================= PROTECTED MAIN ROUTES ================= */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/" element={<Home />} />
         <Route path="/collection" element={<Collection />} />
         <Route path="/product/:productId" element={<Product />} />
@@ -39,6 +47,9 @@ const App = () => {
         <Route path="/careers" element={<Careers />} />
         <Route path="/verify" element={<Verify />} />
       </Route>
+
+      {/* ================= FALLBACK ================= */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };

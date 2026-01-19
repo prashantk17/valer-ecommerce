@@ -192,14 +192,24 @@ const Payment = () => {
         <button
           disabled={loading}
           onClick={placeOrderHandler}
-          className="mt-12 w-full bg-black text-white py-4 text-sm tracking-widest rounded-lg
-                   hover:bg-gray-900 transition disabled:opacity-50"
+          className={`
+    mt-8 w-full py-3 rounded-md
+    transition-all duration-200 ease-out
+    ${
+      loading
+        ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+        : `
+          bg-black text-white
+          hover:bg-neutral-900
+          hover:-translate-y-[1px]
+          hover:shadow-lg hover:shadow-black/20
+          active:translate-y-0
+          active:shadow-md
+        `
+    }
+  `}
         >
-          {loading
-            ? "PROCESSING"
-            : paymentMethod === "COD"
-              ? "PLACE ORDER"
-              : "CONTINUE TO PAYMENT"}
+          {loading ? "Processing…" : "Place order"}
         </button>
 
         {/* Footer Note */}

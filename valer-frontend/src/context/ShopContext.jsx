@@ -1,9 +1,18 @@
 import { createContext, useEffect, useState } from "react";
-import axios from "axios";
 import { backendUrl } from "../config";
 import { toast } from "react-toastify";
+import api from "../utils/api.js";
 
 export const ShopContext = createContext();
+const isTokenExpired = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const now = Date.now() / 1000;
+    return payload.exp < now;
+  } catch {
+    return true;
+  }
+};
 
 const ShopContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
@@ -20,7 +29,7 @@ const ShopContextProvider = ({ children }) => {
   const loadUserCart = async (userToken) => {
     console.log("🧪 USER TOKEN:", token);
     try {
-      const res = await axios.post(
+      const res = await api.post(
         backendUrl + "/api/cart/get",
         {},
         {
@@ -66,7 +75,7 @@ const ShopContextProvider = ({ children }) => {
     // Sync with backend
     if (token) {
       try {
-        await axios.post(
+        await api.post(
           backendUrl + "/api/cart/add",
           { productId, size, quantity: change },
           {
@@ -102,7 +111,7 @@ const ShopContextProvider = ({ children }) => {
   /* ---------------- PRODUCTS ---------------- */
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`${backendUrl}/api/product/list`);
+      const res = await api.get(`${backendUrl}/api/product/list`);
       if (res.data.success) {
         setProducts(res.data.products);
       }
@@ -118,9 +127,16 @@ const ShopContextProvider = ({ children }) => {
     fetchProducts();
 
     const storedToken = localStorage.getItem("token");
+
     if (storedToken) {
-      setToken(storedToken);
-      loadUserCart(storedToken); // ✅ NOW IT WORKS
+      if (isTokenExpired(storedToken)) {
+        localStorage.removeItem("token");
+        setToken("");
+        setCartItems({});
+      } else {
+        setToken(storedToken);
+        loadUserCart(storedToken);
+      }
     }
   }, []);
 

@@ -3,6 +3,7 @@ import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
+import SkeletonProduct from "../components/SkeletonProduct";
 
 const PRICE_RANGES = [
   { label: "Under ₹150", min: 0, max: 149 },
@@ -11,7 +12,7 @@ const PRICE_RANGES = [
 ];
 
 const Collection = () => {
-  const { products, search } = useContext(ShopContext);
+  const { products, search, loading } = useContext(ShopContext);
 
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
@@ -208,15 +209,19 @@ const Collection = () => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-              {filterProducts.map((item) => (
-                <ProductItem
-                  key={item._id}
-                  id={item._id}
-                  name={item.name}
-                  price={item.price}
-                  image={item.images?.[0]}
-                />
-              ))}
+              {loading
+                ? Array.from({ length: 8 }).map((_, i) => (
+                    <SkeletonProduct key={i} />
+                  ))
+                : filterProducts.map((item) => (
+                    <ProductItem
+                      key={item._id}
+                      id={item._id}
+                      name={item.name}
+                      price={item.price}
+                      image={item.images?.[0]}
+                    />
+                  ))}
             </div>
           </main>
         </div>
