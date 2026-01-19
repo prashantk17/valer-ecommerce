@@ -54,10 +54,10 @@ app.get("/", (req, res) => {
   res.json({ success: true, message: "Backend is live" });
 });
 
-app.use("/api/user", userRouter);
-app.use("/api/product", productRouter);
-app.use("/api/cart", cartRouter);
-app.use("/api/order", orderRouter);
+app.use("/user", userRouter);
+app.use("/product", productRouter);
+app.use("/cart", cartRouter);
+app.use("/order", orderRouter);
 
 /* ---------------- EXPORT (NO LISTEN) ---------------- */
 export default app;
